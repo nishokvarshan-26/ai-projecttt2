@@ -28,7 +28,15 @@ import { MODEL_INFO } from "@/lib/config";
 import { formatCoord } from "@/lib/utils";
 
 export function TwinDetailClient({ lakeId }: { lakeId: string }) {
-  const { lakes, selectLake } = useApp();
+  const {
+    lakes,
+    selectLake,
+    twin,
+    twinLoading,
+    scenarioActive,
+    scenarioKind,
+    startTwinScenario,
+  } = useApp();
   const lake = lakes.find((l) => l.id === lakeId);
 
   useEffect(() => {
@@ -89,7 +97,21 @@ export function TwinDetailClient({ lakeId }: { lakeId: string }) {
       {/* Viewer + status */}
       <section className="grid gap-4 lg:grid-cols-3">
         <Card elevated className="p-3 lg:col-span-2">
-          <DigitalTwinViewer lake={lake} riskScore={risk.score} className="h-[380px] sm:h-[460px]" />
+          {!twinLoading && twin.lakeId === lake.id ? (
+            <DigitalTwinViewer
+              lake={lake}
+              twin={twin}
+              scenarioActive={scenarioActive}
+              scenarioKind={scenarioKind}
+              onSimulate={() => startTwinScenario("LANDSLIDE")}
+              className="h-[380px] sm:h-[460px]"
+            />
+          ) : (
+            <div className="flex h-[380px] flex-col items-center justify-center gap-3 bg-bg sm:h-[460px]">
+              <div className="skeleton h-2 w-44" />
+              <p className="font-mono text-xs text-muted">Synchronizing {lake.name} twin…</p>
+            </div>
+          )}
         </Card>
         <div className="space-y-4">
           <Card elevated className="p-4">

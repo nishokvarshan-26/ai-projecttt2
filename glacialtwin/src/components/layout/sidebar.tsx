@@ -19,17 +19,24 @@ import {
   BrainCircuit,
   PanelLeftClose,
   PanelLeftOpen,
+  Mountain,
+  Zap,
+  TriangleAlert,
+  type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/context/app-context";
 import { Logo } from "@/components/common/logo";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+const NAV: Array<{ href: string; label: string; icon: LucideIcon; bright?: boolean }> = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/digital-twin", label: "Digital Twin", icon: Box },
   { href: "/risk-monitoring", label: "Risk Monitoring", icon: ShieldAlert },
   { href: "/lake-analytics", label: "Lake Analytics", icon: LineChart },
   { href: "/satellite-intelligence", label: "Satellite Intelligence", icon: Satellite },
+  { href: "/landslide", label: "Landslide Intelligence", icon: Mountain },
+  { href: "/landslide-analysis", label: "Landslide Analysis", icon: TriangleAlert, bright: true },
+  { href: "/seismic", label: "Seismic Intelligence", icon: Zap },
   { href: "/scenario-simulator", label: "Scenario Simulator", icon: FlaskConical },
   { href: "/flood-mapping", label: "Flood Mapping", icon: Waves },
   { href: "/alerts", label: "Alerts", icon: BellRing },
@@ -82,17 +89,29 @@ export function Sidebar() {
                 aria-current={isActive(item.href) ? "page" : undefined}
                 className={cn(
                   "group relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[12.5px] font-medium transition-colors",
-                  isActive(item.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted hover:bg-elevated hover:text-text",
+                  item.bright
+                    ? isActive(item.href)
+                      ? "border border-high/60 bg-high/20 text-high shadow-[0_0_20px_rgba(249,115,22,0.3)]"
+                      : "border border-high/40 bg-gradient-to-r from-high/15 via-high/5 to-transparent text-high shadow-[0_0_12px_rgba(249,115,22,0.15)] hover:border-high/70 hover:from-high/25 hover:to-high/10 hover:text-text"
+                    : isActive(item.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted hover:bg-elevated hover:text-text",
                   sidebarCollapsed && "justify-center px-0"
                 )}
               >
-                {isActive(item.href) && (
+                {isActive(item.href) && !item.bright && (
                   <span aria-hidden className="absolute top-1.5 bottom-1.5 left-0 w-0.5 rounded-full bg-primary" />
                 )}
-                <item.icon className="h-4 w-4 shrink-0" aria-hidden />
+                <item.icon className={cn("h-4 w-4 shrink-0", item.bright && "text-high")} aria-hidden />
                 {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+                {!sidebarCollapsed && item.bright && (
+                  <span className="ml-auto inline-flex items-center gap-1">
+                    <span aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-high" />
+                    <span className="rounded bg-high/20 px-1 py-0.5 font-mono text-[8px] font-bold tracking-wider text-high">
+                      VITAL
+                    </span>
+                  </span>
+                )}
                 {!sidebarCollapsed && item.href === "/alerts" && unacknowledged > 0 && (
                   <span className="ml-auto rounded-full bg-critical/20 px-1.5 py-0.5 font-mono text-[9px] text-critical">
                     {unacknowledged}
